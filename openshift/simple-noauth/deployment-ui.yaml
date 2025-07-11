@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: apicurio-registry
+    component: apicurio-registry-ui
+  name: apicurio-registry-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: apicurio-registry-ui
+  template:
+    metadata:
+      labels:
+        app: apicurio-registry
+        component: apicurio-registry-ui
+    spec:
+      containers:
+        - image: >-
+            quay.io/apicurio/apicurio-registry-ui:3.0.9
+          name: apicurio-registry-ui
+          ports:
+            - name: web
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: REGISTRY_API_URL
+              value: 'https://registry-api.cluster.openshift.com/apis/registry/v3'
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1000Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+          livenessProbe:
+            httpGet:
+              path: /config.js
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /config.js
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: apicurio-registry
+    component: apicurio-registry-api
+  name: apicurio-registry-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: apicurio-registry-api
+  template:
+    metadata:
+      labels:
+        app: apicurio-registry
+        component: apicurio-registry-api
+    spec:
+      containers:
+        - image: >-
+            quay.io/apicurio/apicurio-registry:3.0.9
+          name: apicurio-registry-api
+          ports:
+            - name: web
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: APICURIO_LOG_LEVEL
+              value: DEBUG
+            - name: LOG_LEVEL
+              value: INFO
+            - name: QUARKUS_PROFILE
+              value: prod
+            - name: APICURIO_REST_DELETION_GROUP_ENABLED
+              value: 'true'
+            - name: APICURIO_REST_DELETION_ARTIFACT_ENABLED
+              value: 'true'
+            - name: APICURIO_REST_DELETION_ARTIFACT-VERSION_ENABLED
+              value: 'true'
+            - name: QUARKUS_HTTP_CORS_ORIGINS
+              value: '*'
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1000Mi
+            requests:
+              cpu: 200m
+              memory: 400Mi
+
